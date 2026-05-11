@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs / OS
+*.log
+npm-debug.log*
+
+# Optional local tooling
+node_modules/

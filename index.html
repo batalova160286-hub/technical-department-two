@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Планирование заявок технического отдела ООО ЭРА Глонасс: расписание инженеров, архив месяцев, учёт обедов." />
+  <title>Техотдел — планирование заявок</title>
+  <style>
+    :root {
+      --blue: #005baa;
+      --dark-blue: #003f7d;
+      --light-blue: #eaf4ff;
+      --text: #1f2937;
+      --muted: #64748b;
+      --white: #ffffff;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .top-bar strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .top-bar .btn {
+      padding: 10px 18px;
+      font-size: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      color: var(--white);
+      padding: 56px 24px 64px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(26px, 5vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0 auto 28px;
+      max-width: 560px;
+      font-size: 17px;
+      opacity: 0.95;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: var(--dark-blue);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 48px;
+    }
+
+    .features {
+      margin-top: -32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--dark-blue);
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .card .icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .note {
+      margin-top: 36px;
+      padding: 18px 20px;
+      background: var(--light-blue);
+      border-radius: 12px;
+      border-left: 4px solid var(--blue);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .note code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <span><strong>ООО «ЭРА Глонасс»</strong> · технический отдел</span>
+    <a class="btn btn-primary" href="planner.html">Планировщик</a>
+  </div>
+
+  <header class="hero">
+    <h1>Добро пожаловать</h1>
+    <p>
+      Внутренний инструмент для распределения заявок по инженерам, дням и часам.
+      Всё хранится в браузере — можно работать офлайн после первой загрузки страницы.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="planner.html">Открыть план загрузки</a>
+      <a class="btn btn-ghost" href="#features">Возможности</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="features" id="features">
+      <div class="feature-grid">
+        <article class="card">
+          <div class="icon" aria-hidden="true">📅</div>
+          <h2>Месячный график</h2>
+          <p>Все дни месяца, разбивка по неделям и трём инженерам с 9:00 до 20:00.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">💾</div>
+          <h2>Архив месяцев</h2>
+          <p>Сохранение и открытие планов в <code>localStorage</code> — без отдельной базы.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">🍽️</div>
+          <h2>Обеды</h2>
+          <p>Учёт личных слотов; при конфликте с заявкой обед сдвигается на свободный час.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">🖨️</div>
+          <h2>Печать</h2>
+          <p>Кнопка печати убирает лишнее и оставляет чистый план на бумаге.</p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>Как открыть:</strong> достаточно двойного щелчка по <code>index.html</code>.
+        Если установлен Node.js, в папке проекта можно выполнить <code>npm start</code> —
+        тогда сайт откроется через локальный сервер (удобно для просмотра с телефона в той же сети).
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Планировщик заявок технического отдела · статический сайт
+  </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "tech-dept-scheduler",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Статический планировщик заявок технического отдела (лендинг + HTML-приложение).",
+  "scripts": {
+    "start": "npx --yes serve -l 3000 ."
+  }
+}

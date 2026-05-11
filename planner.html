@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Планировщик — технический отдел</title>
+
+  <style>
+    :root {
+      --blue: #005baa;
+      --dark-blue: #003f7d;
+      --light-blue: #eaf4ff;
+      --green: #1f9d55;
+      --orange: #f59e0b;
+      --red: #dc2626;
+      --gray: #f3f4f6;
+      --border: #d1d5db;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8fafc;
+      color: var(--text);
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 20px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    .site-nav a {
+      color: #93c5fd;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .site-nav a:hover {
+      color: #bfdbfe;
+      text-decoration: underline;
+    }
+
+    .site-nav-brand {
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      color: var(--dark-blue);
+      font-size: 22px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--blue);
+      color: white;
+      font-weight: bold;
+      border: none;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: var(--dark-blue);
+    }
+
+    .btn-secondary {
+      background: #64748b;
+    }
+
+    .btn-edit {
+      background: #7c3aed;
+    }
+
+    .btn-edit:hover {
+      background: #5b21b6;
+    }
+
+    .action-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .action-modal.open {
+      display: flex;
+    }
+
+    .action-modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+      padding: 16px;
+    }
+
+    .action-modal-card h3 {
+      margin: 0 0 8px;
+      color: var(--dark-blue);
+    }
+
+    .action-modal-card p {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .action-modal-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-danger {
+      background: var(--red);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .summary-card {
+      border-radius: 12px;
+      background: var(--light-blue);
+      padding: 16px;
+      border-left: 5px solid var(--blue);
+    }
+
+    .summary-card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .summary-card p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .summary-month-note {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .type-stats {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .type-stat-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      font-size: 12px;
+    }
+
+    .type-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .type-empty {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1200px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: center;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--blue);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .date-cell {
+      background: #eff6ff;
+      font-weight: bold;
+      min-width: 105px;
+    }
+
+    .engineer-name {
+      background: #f8fafc;
+      font-weight: bold;
+      min-width: 150px;
+    }
+
+    .slot {
+      min-height: 46px;
+      border-radius: 8px;
+      padding: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 12px;
+    }
+
+    .slot:hover {
+      background: #dbeafe;
+      outline: 2px solid var(--blue);
+    }
+
+    .busy {
+      color: white;
+      font-weight: bold;
+    }
+
+    .lunch {
+      background: #fde68a !important;
+      color: #78350f;
+      font-weight: bold;
+      cursor: not-allowed;
+    }
+
+    .lunch-shifted {
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.45), 0 0 14px rgba(245, 158, 11, 0.65);
+    }
+
+    .lunch-lamp {
+      margin-left: 4px;
+      font-size: 14px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    .lunch-lamp.on {
+      filter: drop-shadow(0 0 8px #facc15);
+      animation: lampPulse 1.6s ease-in-out infinite;
+    }
+
+    .lunch-lamp.off {
+      opacity: 0.35;
+    }
+
+    @keyframes lampPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    .free {
+      color: var(--muted);
+    }
+
+    .type-0 { background: #2563eb; }
+    .type-1 { background: #16a34a; }
+    .type-2 { background: #9333ea; }
+    .type-3 { background: #ea580c; }
+    .type-4 { background: #0891b2; }
+    .type-5 { background: #be123c; }
+    .type-6 { background: #4f46e5; }
+    .type-7 { background: #0f766e; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .legend-color {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+    }
+
+    .week-separator td {
+      background: #e0f2fe;
+      color: #0c4a6e;
+      font-weight: bold;
+      text-align: left;
+      padding: 10px 12px;
+      border-top: 3px solid #0ea5e9;
+      border-bottom: 2px solid #bae6fd;
+    }
+
+    .month-archive {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .month-archive h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--dark-blue);
+    }
+
+    .month-archive-controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .docs {
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .docs code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 900px) {
+      .controls,
+      .summary,
+      .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .month-archive-controls {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 22px;
+      }
+    }
+
+    @media print {
+      button,
+      .controls,
+      .docs,
+      .site-nav {
+        display: none;
+      }
+
+      body {
+        background: white;
+      }
+
+      .panel {
+        box-shadow: none;
+        border: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="site-nav" aria-label="Основная навигация">
+    <span class="site-nav-brand">Техотдел · планировщик</span>
+    <a href="index.html">← На главную</a>
+  </nav>
+  <header>
+    <h1>План загрузки инженеров технического отдела</h1>
+    <p>ООО "ЭРА Глонасс" — распределение заявок по инженерам, дням и рабочим часам</p>
+  </header>
+
+  <div class="container">
+
+    <section class="panel">
+      <h2>Добавление заявки</h2>
+
+      <div class="controls">
+        <div>
+          <label for="date">Дата</label>
+          <input type="date" id="date" />
+        </div>
+
+        <div>
+          <label for="engineer">Инженер</label>
+          <select id="engineer">
+            <option value="0">Третьяков А.В.</option>
+            <option value="1">Бобылев С.Б.</option>
+            <option value="2">Долгополов Д.Н.</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="time">Время</label>
+          <select id="time"></select>
+        </div>
+
+        <div>
+          <label for="requestType">Тип заявки</label>
+          <select id="requestType"></select>
+        </div>
+
+        <div>
+          <label for="duration">Длительность</label>
+          <select id="duration">
+            <option value="1">1 час</option>
+            <option value="2">2 часа</option>
+            <option value="3">3 часа</option>
+            <option value="4">4 часа</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div>
+          <label for="client">Клиент / ТС</label>
+          <input type="text" id="client" placeholder="Например: ООО Альфа, КАМАЗ" />
+        </div>
+
+        <div>
+          <label for="comment">Комментарий</label>
+          <input type="text" id="comment" placeholder="Адрес, номер заявки, примечание" />
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <button onclick="addRequest()">Добавить заявку</button>
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn-secondary" onclick="printPlan()">Печать</button>
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <!-- Редактирование доступно по клику на занятую ячейку в графике -->
+        </div>
+      </div>
+
+      <!-- Блок сохранения и открытия планов по месяцам -->
+      <div class="month-archive">
+        <h3>Архив месяцев</h3>
+        <div class="month-archive-controls">
+          <select id="monthArchiveSelect"></select>
+          <button type="button" class="btn-secondary" onclick="saveCurrentMonthPlan()">Сохранить месяц</button>
+          <button type="button" onclick="openSelectedMonthPlan()">Открыть месяц</button>
+        </div>
+      </div>
+
+      <div class="summary" id="summary"></div>
+    </section>
+
+    <section class="panel">
+      <h2>График загрузки на месяц</h2>
+      <div class="table-wrapper">
+        <table id="scheduleTable"></table>
+      </div>
+
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="panel docs">
+      <h2>Документация</h2>
+
+      <p>
+        Сайт статический: откройте <code>index.html</code> для главной страницы
+        или этот файл (<code>planner.html</code>) для планировщика. Работает без сервера.
+      </p>
+
+      <p>
+        Рабочее время технического отдела: <strong>с 9:00 до 20:00</strong>.
+        Каждый час представлен отдельной ячейкой.
+      </p>
+
+      <p>
+        Дни в таблице визуально разделены горизонтальными границами,
+        чтобы удобнее читать расписание по датам.
+      </p>
+
+      <p>
+        Обеденные перерывы:
+        <br>Третьяков А.В. — <strong>12:00–13:00</strong>
+        <br>Бобылев С.Б. — <strong>13:00–14:00</strong>
+        <br>Долгополов Д.Н. — <strong>14:00–15:00</strong>
+      </p>
+
+      <p>
+        Для добавления заявки выберите дату, инженера, время, тип заявки,
+        длительность и нажмите <code>Добавить заявку</code>.
+      </p>
+
+      <p>
+        В графике всегда отображаются все дни месяца:
+        и рабочие, и выходные.
+      </p>
+
+      <p>
+        Таблица дополнительно разделяется по неделям отдельными строками,
+        чтобы в длинном месяце было проще ориентироваться при прокрутке вниз.
+      </p>
+
+      <p>
+        В блоке <strong>«Архив месяцев»</strong> можно сохранить текущий месяц
+        и в любой момент открыть ранее сохраненный план.
+      </p>
+
+      <p>
+        Если заявка пересекается с обедом, обед автоматически переносится
+        на ближайший свободный час и отмечается светящейся лампочкой.
+        Конфликт с уже назначенной заявкой по-прежнему блокируется.
+      </p>
+
+      <p>
+        Для удаления конкретной заявки нажмите на занятую ячейку в таблице.
+      </p>
+
+      <p>
+        Кнопка <code>Печать</code> формирует печатную версию плана.
+      </p>
+    </section>
+  </div>
+
+  <!-- Модальное окно выбора действия для занятой заявки -->
+  <div class="action-modal" id="requestActionModal">
+    <div class="action-modal-card">
+      <h3>Действие с заявкой</h3>
+      <p>Выберите, что нужно сделать с выбранной заявкой.</p>
+      <div class="action-modal-buttons">
+        <button type="button" class="btn-edit" onclick="editSelectedRequestFields()">Редактировать заявку</button>
+        <button type="button" class="btn-danger" onclick="deleteSelectedRequest()">Удалить заявку</button>
+        <button type="button" class="btn-secondary" onclick="closeRequestActionModal()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const engineers = [
+      {
+        name: "Третьяков А.В.",
+        lunch: "12:00"
+      },
+      {
+        name: "Бобылев С.Б.",
+        lunch: "13:00"
+      },
+      {
+        name: "Долгополов Д.Н.",
+        lunch: "14:00"
+      }
+    ];
+
+    const requestTypes = [
+      "Установка тахографа",
+      "Калибровка тахографа СКЗИ",
+      "Калибровка тахографа ЕСТР",
+      "Установка Терминала",
+      "Установка ДУТ",
+      "Установка ГЛОНАСС под ключ",
+      "Установка видеонаблюдения",
+      "Установка оборудования для ДОПОГ"
+    ];
+
+    const workingHours = [
+      "09:00",
+      "10:00",
+      "11:00",
+      "12:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+      "18:00",
+      "19:00"
+    ];
+
+    const STORAGE_KEY = "techDeptMonthlyPlansV1";
+    let monthlyPlans = {};
+    let requests = [];
+    let activeMonthKey = "";
+    let dateToScroll = "";
+    let selectedRequestIdForAction = null;
+
+    function init() {
+      fillTimeSelect();
+      fillRequestTypes();
+      setDefaultDate();
+      loadPlansFromStorage();
+      syncMonthBySelectedDate();
+      renderArchiveOptions();
+      bindArchiveEvents();
+      renderLegend();
+      renderSchedule();
+      renderSummary();
+    }
+
+    function setDefaultDate() {
+      const today = new Date();
+      // Используем локальную дату, чтобы избежать смещения на день из-за UTC
+      const dateInput = document.getElementById("date");
+      dateInput.autocomplete = "off";
+      // При каждом открытии файла браузер подставляет ранее введённые значения —
+      // ставим календарь на текущий день, как требует заказчик
+      dateInput.defaultValue = toLocalDateInputValue(today);
+      dateInput.value = toLocalDateInputValue(today);
+    }
+
+    function fillTimeSelect() {
+      const timeSelect = document.getElementById("time");
+
+      workingHours.forEach(hour => {
+        const option = document.createElement("option");
+        option.value = hour;
+        option.textContent = hour;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    function fillRequestTypes() {
+      const select = document.getElementById("requestType");
+      select.innerHTML = "";
+
+      requestTypes.forEach((type, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = type;
+        select.appendChild(option);
+      });
+    }
+
+    function parseDateInputValue(dateString) {
+      const parts = dateString.split("-");
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const day = Number(parts[2]);
+      return new Date(year, month, day);
+    }
+
+    function getMonthDates() {
+      const selectedDateString = document.getElementById("date").value;
+      const selectedDate = parseDateInputValue(selectedDateString);
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+
+      const dates = [];
+      const current = new Date(year, month, 1);
+
+      while (current.getMonth() === month) {
+        dates.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+
+      return dates;
+    }
+
+    function formatDate(date) {
+      // Храним и сравниваем даты в локальном формате YYYY-MM-DD
+      return toLocalDateInputValue(date);
+    }
+
+    function toLocalDateInputValue(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getMonthKeyFromDateString(dateString) {
+      return dateString.slice(0, 7);
+    }
+
+    function formatMonthKeyRu(monthKey) {
+      const [year, month] = monthKey.split("-");
+      return `${month}.${year}`;
+    }
+
+    function loadPlansFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        monthlyPlans = raw ? JSON.parse(raw) : {};
+      } catch (error) {
+        monthlyPlans = {};
+      }
+    }
+
+    function savePlansToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(monthlyPlans));
+    }
+
+    function saveCurrentMonthPlan(showAlert = true, monthKey = activeMonthKey) {
+      if (!monthKey) return;
+      monthlyPlans[monthKey] = requests;
+      savePlansToStorage();
+      renderArchiveOptions();
+
+      if (showAlert) {
+        alert(`План за ${formatMonthKeyRu(monthKey)} сохранен.`);
+      }
+    }
+
+    function loadMonthPlan(monthKey) {
+      activeMonthKey = monthKey;
+      const savedRequests = monthlyPlans[monthKey] || [];
+      requests = Array.isArray(savedRequests) ? savedRequests : [];
+
+      renderArchiveOptions();
+      renderSchedule();
+      renderSummary();
+    }
+
+    function syncMonthBySelectedDate() {
+      const selectedDate = document.getElementById("date").value;
+      if (!selectedDate) return;
+
+      const targetMonthKey = getMonthKeyFromDateString(selectedDate);
+      if (!monthlyPlans[targetMonthKey]) {
+        monthlyPlans[targetMonthKey] = [];
+      }
+
+      if (activeMonthKey !== targetMonthKey) {
+        loadMonthPlan(targetMonthKey);
+      }
+    }
+
+    function renderArchiveOptions() {
+      const select = document.getElementById("monthArchiveSelect");
+      if (!select) return;
+
+      select.innerHTML = "";
+
+      const monthKeys = Object.keys(monthlyPlans).sort((a, b) => b.localeCompare(a));
+
+      if (monthKeys.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Сохраненных месяцев нет";
+        select.appendChild(option);
+        return;
+      }
+
+      monthKeys.forEach((monthKey) => {
+        const option = document.createElement("option");
+        option.value = monthKey;
+        option.textContent = formatMonthKeyRu(monthKey);
+        if (monthKey === activeMonthKey) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+    }
+
+    function bindArchiveEvents() {
+      const select = document.getElementById("monthArchiveSelect");
+      if (!select) return;
+
+      // При выборе месяца в архиве сразу показываем данные этого месяца в графике и карточках инженеров
+      select.addEventListener("change", () => {
+        openSelectedMonthPlan();
+      });
+    }
+
+    function openSelectedMonthPlan() {
+      const select = document.getElementById("monthArchiveSelect");
+      const monthKey = select.value;
+
+      if (!monthKey) {
+        alert("Выберите месяц из архива.");
+        return;
+      }
+
+      const [year, month] = monthKey.split("-");
+      const targetDate = `${year}-${month}-01`;
+      document.getElementById("date").value = targetDate;
+      loadMonthPlan(monthKey);
+    }
+
+    function editRequestFromButton() {
+      if (!requests.length) {
+        alert("В текущем месяце нет заявок для редактирования.");
+        return;
+      }
+
+      const sortedRequests = [...requests].sort((a, b) => {
+        const aKey = `${a.date} ${a.hours[0] || ""}`;
+        const bKey = `${b.date} ${b.hours[0] || ""}`;
+        return aKey.localeCompare(bKey);
+      });
+
+      const listText = sortedRequests
+        .map((req, index) => `${index + 1}. ${req.date} | ${engineers[req.engineerIndex].name} | ${req.hours[0]} | ${req.type}`)
+        .join("\n");
+
+      const selectedNumber = Number(prompt(`Выберите номер заявки для редактирования:\n\n${listText}`));
+      if (!selectedNumber || selectedNumber < 1 || selectedNumber > sortedRequests.length) {
+        return;
+      }
+
+      const targetRequest = sortedRequests[selectedNumber - 1];
+      editRequestById(targetRequest.id);
+    }
+
+    function handleRequestClick(requestId) {
+      selectedRequestIdForAction = requestId;
+      openRequestActionModal();
+    }
+
+    function editRequestById(requestId) {
+      const targetRequest = requests.find((item) => item.id === requestId);
+      if (!targetRequest) {
+        alert("Заявка не найдена.");
+        return;
+      }
+
+      const reqIndex = requests.findIndex((item) => item.id === requestId);
+      if (reqIndex === -1) return;
+
+      const typePrompt = prompt(
+        `Тип заявки:\n${requestTypes.map((type, i) => `${i + 1}. ${type}`).join("\n")}`,
+        String(targetRequest.typeIndex + 1)
+      );
+      if (!typePrompt) return;
+      const typeIndex = Number(typePrompt) - 1;
+
+      const client = prompt("Клиент / ТС:", targetRequest.client || "") ?? (targetRequest.client || "");
+      const comment = prompt("Комментарий:", targetRequest.comment || "") ?? (targetRequest.comment || "");
+
+      if (typeIndex < 0 || typeIndex >= requestTypes.length) {
+        alert("Некорректный тип заявки.");
+        return;
+      }
+
+      requests[reqIndex] = {
+        ...requests[reqIndex],
+        typeIndex,
+        type: requestTypes[typeIndex],
+        client: client.trim(),
+        comment: comment.trim()
+      };
+
+      dateToScroll = targetRequest.date;
+      saveCurrentMonthPlan(false, activeMonthKey);
+      renderSchedule();
+      renderSummary();
+      alert("Изменения заявки сохранены.");
+    }
+
+    function openRequestActionModal() {
+      const modal = document.getElementById("requestActionModal");
+      if (!modal) return;
+      modal.classList.add("open");
+    }
+
+    function closeRequestActionModal() {
+      const modal = document.getElementById("requestActionModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      selectedRequestIdForAction = null;
+    }
+
+    function editSelectedRequestFields() {
+      if (!selectedRequestIdForAction) return;
+      const id = selectedRequestIdForAction;
+      closeRequestActionModal();
+      editRequestById(id);
+    }
+
+    function deleteSelectedRequest() {
+      if (!selectedRequestIdForAction) return;
+      const id = selectedRequestIdForAction;
+      closeRequestActionModal();
+      removeRequest(id);
+    }
+
+    function formatDateRu(date) {
+      return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function getWeekDayRu(date) {
+      return date.toLocaleDateString("ru-RU", {
+        weekday: "short"
+      });
+    }
+
+    // Возвращает дату понедельника для текущей недели
+    function getWeekStart(date) {
+      const result = new Date(date);
+      const day = result.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      result.setDate(result.getDate() + diffToMonday);
+      return result;
+    }
+
+    function addRequest() {
+      const date = document.getElementById("date").value;
+      const engineerIndex = Number(document.getElementById("engineer").value);
+      const startTime = document.getElementById("time").value;
+      const typeIndex = Number(document.getElementById("requestType").value);
+      const duration = Number(document.getElementById("duration").value);
+      const client = document.getElementById("client").value.trim();
+      const comment = document.getElementById("comment").value.trim();
+
+      if (!date) {
+        alert("Выберите дату.");
+        return;
+      }
+
+      const startIndex = workingHours.indexOf(startTime);
+
+      if (startIndex + duration > workingHours.length) {
+        alert("Заявка выходит за пределы рабочего дня.");
+        return;
+      }
+
+      for (let i = 0; i < duration; i++) {
+        const hour = workingHours[startIndex + i];
+
+        const conflict = requests.find(req =>
+          req.date === date &&
+          req.engineerIndex === engineerIndex &&
+          req.hours.includes(hour)
+        );
+
+        if (conflict) {
+          alert("На выбранное время уже назначена другая заявка.");
+          return;
+        }
+      }
+
+      const hours = [];
+
+      for (let i = 0; i < duration; i++) {
+        hours.push(workingHours[startIndex + i]);
+      }
+
+      requests.push({
+        id: Date.now(),
+        date,
+        engineerIndex,
+        typeIndex,
+        type: requestTypes[typeIndex],
+        client,
+        comment,
+        hours
+      });
+
+      // После добавления заявки прокручиваем график к выбранной дате
+      dateToScroll = date;
+      saveCurrentMonthPlan(false, activeMonthKey);
+
+      document.getElementById("client").value = "";
+      document.getElementById("comment").value = "";
+
+      renderSchedule();
+      renderSummary();
+    }
+
+    function removeRequest(id) {
+      const confirmed = confirm("Удалить эту заявку из плана?");
+      if (!confirmed) return;
+
+      requests = requests.filter(req => req.id !== id);
+      saveCurrentMonthPlan(false, activeMonthKey);
+
+      renderSchedule();
+      renderSummary();
+    }
+
+    function renderSchedule() {
+      const table = document.getElementById("scheduleTable");
+      table.innerHTML = "";
+
+      const headerRow = document.createElement("tr");
+
+      const dateHeader = document.createElement("th");
+      dateHeader.textContent = "Дата";
+      headerRow.appendChild(dateHeader);
+
+      const engineerHeader = document.createElement("th");
+      engineerHeader.textContent = "Инженер";
+      headerRow.appendChild(engineerHeader);
+
+      workingHours.forEach(hour => {
+        const th = document.createElement("th");
+        th.textContent = hour;
+        headerRow.appendChild(th);
+      });
+
+      table.appendChild(headerRow);
+
+      const dates = getMonthDates();
+      const totalColumns = 2 + workingHours.length;
+      let previousWeekKey = "";
+
+      dates.forEach(dateObj => {
+        const weekStart = getWeekStart(dateObj);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        const weekKey = formatDate(weekStart);
+
+        if (weekKey !== previousWeekKey) {
+          const weekRow = document.createElement("tr");
+          weekRow.className = "week-separator";
+
+          const weekCell = document.createElement("td");
+          weekCell.colSpan = totalColumns;
+          weekCell.innerHTML = `
+            <!-- Визуально делим график на недели -->
+            Неделя: ${formatDateRu(weekStart)} - ${formatDateRu(weekEnd)}
+          `;
+
+          weekRow.appendChild(weekCell);
+          table.appendChild(weekRow);
+          previousWeekKey = weekKey;
+        }
+
+        engineers.forEach((engineer, engineerIndex) => {
+          const row = document.createElement("tr");
+          const isFirstEngineerOfDay = engineerIndex === 0;
+          const isLastEngineerOfDay = engineerIndex === engineers.length - 1;
+
+          if (isFirstEngineerOfDay) {
+            row.style.borderTop = "3px solid #94a3b8";
+          }
+
+          if (isLastEngineerOfDay) {
+            row.style.borderBottom = "3px solid #cbd5e1";
+          }
+
+          const dateCell = document.createElement("td");
+          dateCell.className = "date-cell";
+          const dateString = formatDate(dateObj);
+
+          if (isFirstEngineerOfDay) {
+            row.id = `date-row-${dateString}`;
+          }
+
+          if (isFirstEngineerOfDay) {
+            dateCell.style.boxShadow = "inset 4px 0 0 #0ea5e9";
+          }
+          dateCell.innerHTML = `
+            ${formatDateRu(dateObj)}
+            <br>
+            <small>${getWeekDayRu(dateObj)}</small>
+          `;
+          row.appendChild(dateCell);
+
+          const engineerCell = document.createElement("td");
+          engineerCell.className = "engineer-name";
+          engineerCell.textContent = engineer.name;
+          row.appendChild(engineerCell);
+          const lunchInfo = getLunchInfo(dateString, engineerIndex);
+
+          workingHours.forEach(hour => {
+            const td = document.createElement("td");
+            const slot = document.createElement("div");
+            slot.className = "slot";
+
+            if (hour === lunchInfo.hour) {
+              slot.classList.add("lunch");
+              if (lunchInfo.isShifted) {
+                slot.classList.add("lunch-shifted");
+              }
+
+              slot.innerHTML = `
+                Обед
+                <span
+                  class="lunch-lamp ${lunchInfo.isShifted ? "on" : "off"}"
+                  title="${lunchInfo.isShifted ? "Обед перенесён из-за заявки" : "Обед без переноса"}"
+                >💡</span>
+              `;
+            } else {
+              const request = requests.find(req =>
+                req.date === dateString &&
+                req.engineerIndex === engineerIndex &&
+                req.hours.includes(hour)
+              );
+
+              if (request) {
+                slot.classList.add("busy", `type-${request.typeIndex}`);
+                // По клику на заявку в графике можно выбрать: редактировать или удалить
+                slot.onclick = () => handleRequestClick(request.id);
+
+                slot.innerHTML = `
+                  ${request.type}
+                  ${request.client ? `<br><small>${request.client}</small>` : ""}
+                  ${request.comment ? `<br><small>${request.comment}</small>` : ""}
+                `;
+              } else {
+                slot.classList.add("free");
+                slot.textContent = "Свободно";
+              }
+            }
+
+            td.appendChild(slot);
+            row.appendChild(td);
+          });
+
+          table.appendChild(row);
+        });
+      });
+
+      if (dateToScroll) {
+        scrollToDateInSchedule(dateToScroll);
+        dateToScroll = "";
+      }
+    }
+
+    function renderSummary() {
+      const summary = document.getElementById("summary");
+      summary.innerHTML = "";
+      const selectedDate = document.getElementById("date").value;
+      const monthLabel = activeMonthKey ? formatMonthKeyRu(activeMonthKey) : "текущий месяц";
+
+      engineers.forEach((engineer, index) => {
+        const engineerRequests = requests.filter(req => req.engineerIndex === index);
+        const totalHours = engineerRequests.reduce((sum, req) => sum + req.hours.length, 0);
+        const lunchInfo = selectedDate ? getLunchInfo(selectedDate, index) : { hour: engineer.lunch, isShifted: false };
+        const typeCounters = new Map();
+
+        engineerRequests.forEach((req) => {
+          const currentCount = typeCounters.get(req.typeIndex) || 0;
+          typeCounters.set(req.typeIndex, currentCount + 1);
+        });
+
+        const typeStatsHtml = requestTypes
+          .map((typeName, typeIndex) => {
+            const count = typeCounters.get(typeIndex) || 0;
+            if (!count) return "";
+
+            return `
+              <span class="type-stat-item">
+                <span class="type-dot type-${typeIndex}"></span>
+                <span>${typeName}: ${count}</span>
+              </span>
+            `;
+          })
+          .join("");
+
+        const card = document.createElement("div");
+        card.className = "summary-card";
+
+        card.innerHTML = `
+          <!-- Карточка инженера: итоги по выбранному месяцу и типам заявок -->
+          <h3>${engineer.name}</h3>
+          <p class="summary-month-note">Месяц: ${monthLabel}</p>
+          <p><strong>Заявок:</strong> ${engineerRequests.length}</p>
+          <p><strong>Загружено часов:</strong> ${totalHours}</p>
+          <p>
+            <strong>Обед (на выбранную дату):</strong>
+            ${lunchInfo.hour}–${addOneHour(lunchInfo.hour)}
+            <span
+              class="lunch-lamp ${lunchInfo.isShifted ? "on" : "off"}"
+              title="${lunchInfo.isShifted ? "Обед перенесён из-за заявки" : "Обед без переноса"}"
+            >💡</span>
+          </p>
+          <p><strong>Типы заявок за месяц:</strong></p>
+          <div class="type-stats">
+            ${typeStatsHtml || `<span class="type-empty">За этот месяц заявок пока нет.</span>`}
+          </div>
+        `;
+
+        summary.appendChild(card);
+      });
+    }
+
+    // Возвращает занят ли конкретный час у инженера в выбранную дату
+    function isHourBusyByRequest(date, engineerIndex, hour) {
+      return requests.some(req =>
+        req.date === date &&
+        req.engineerIndex === engineerIndex &&
+        req.hours.includes(hour)
+      );
+    }
+
+    // Рассчитывает фактический час обеда: если базовый час занят, переносит на ближайший свободный
+    function getLunchInfo(date, engineerIndex) {
+      const defaultLunch = engineers[engineerIndex].lunch;
+      const defaultIndex = workingHours.indexOf(defaultLunch);
+
+      if (defaultIndex === -1) {
+        return { hour: defaultLunch, isShifted: false };
+      }
+
+      if (!isHourBusyByRequest(date, engineerIndex, defaultLunch)) {
+        return { hour: defaultLunch, isShifted: false };
+      }
+
+      for (let offset = 1; offset < workingHours.length; offset++) {
+        const rightIndex = defaultIndex + offset;
+        if (rightIndex < workingHours.length) {
+          const rightHour = workingHours[rightIndex];
+          if (!isHourBusyByRequest(date, engineerIndex, rightHour)) {
+            return { hour: rightHour, isShifted: true };
+          }
+        }
+
+        const leftIndex = defaultIndex - offset;
+        if (leftIndex >= 0) {
+          const leftHour = workingHours[leftIndex];
+          if (!isHourBusyByRequest(date, engineerIndex, leftHour)) {
+            return { hour: leftHour, isShifted: true };
+          }
+        }
+      }
+
+      return { hour: defaultLunch, isShifted: true };
+    }
+
+    function addOneHour(time) {
+      const hour = Number(time.split(":")[0]) + 1;
+      return String(hour).padStart(2, "0") + ":00";
+    }
+
+    function renderLegend() {
+      const legend = document.getElementById("legend");
+      legend.innerHTML = "";
+
+      requestTypes.forEach((type, index) => {
+        const item = document.createElement("div");
+        item.className = "legend-item";
+
+        item.innerHTML = `
+          <span class="legend-color type-${index}"></span>
+          <span>${type}</span>
+        `;
+
+        legend.appendChild(item);
+      });
+    }
+
+    function printPlan() {
+      window.print();
+    }
+
+    function scrollToDateInSchedule(date) {
+      const row = document.getElementById(`date-row-${date}`);
+      if (!row) return;
+
+      row.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    document.getElementById("date").addEventListener("change", () => {
+      syncMonthBySelectedDate();
+      renderSchedule();
+      renderSummary();
+    });
+
+    init();
+  </script>
+</body>
+</html>
